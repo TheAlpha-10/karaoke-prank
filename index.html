@@ -3,47 +3,69 @@
 <head>
   <title>Karaoke Friday 🎤</title>
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <!-- Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
     body {
       margin: 0;
-      background: #0b1f3a; /* navy blue */
+      background: #0b1f3a;
       color: white;
       font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       height: 100vh;
       overflow: hidden;
+    }
+
+    /* LOADING SCREEN */
+    #loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
       text-align: center;
     }
 
-    #loading {
- font-size: 5vw;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-@keyframes pulse {
-  0% { opacity: 0.6; }
-  50% { opacity: 1; }
-  100% { opacity: 0.6; }
+    #loading-text {
+      font-size: 5vw;
+      margin-bottom: 20px;
+      font-weight: bold;
     }
 
+    #progress-container {
+      width: 100%;
+      height: 12px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    #progress-bar {
+      width: 0%;
+      height: 100%;
+      background: #00c3ff;
+    }
+
+    #percentage {
+      margin-top: 10px;
+      font-size: 3vw;
+    }
+
+    /* POPUP */
     .popup {
       display: none;
-      background: #0b1f3a; /* navy blue */
+      background: #0b1f3a;
       width: 90%;
       height: 90%;
       border-radius: 20px;
-      box-shadow: 0 0 40px rgba(0, 40, 90, 0.9);
+      box-shadow: 0 0 40px rgba(0,40,90,0.9);
       padding: 5%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -61,7 +83,6 @@
 
     h2.line {
       font-size: 4vw;
-      margin-bottom: 2vh;
     }
 
     .show {
@@ -69,71 +90,73 @@
       transform: translateY(0);
     }
 
-    /* Mobile optimization */
+    /* MOBILE */
     @media (max-width: 600px) {
-      #loading {
-        font-size: 6vw;
-      }
-
-      h2.line {
-        font-size: 7vw;
-      }
-
-      .line {
-        font-size: 4.5vw;
-      }
+      #loading-text { font-size: 6vw; }
+      #percentage { font-size: 4vw; }
+      h2.line { font-size: 7vw; }
+      .line { font-size: 4.5vw; }
     }
 
+    /* EMOJIS */
     .emoji {
       position: absolute;
       animation: floatUp 3s linear infinite;
     }
 
     @keyframes floatUp {
-      from {
-        transform: translateY(100vh);
-        opacity: 1;
-      }
-      to {
-        transform: translateY(-10vh);
-        opacity: 0;
-      }
+      from { transform: translateY(100vh); opacity: 1; }
+      to { transform: translateY(-10vh); opacity: 0; }
     }
   </style>
 </head>
 
 <body>
 
-<div id="loading">🎤 Connecting to Karaoke System...</div>
+<!-- LOADING -->
+<div id="loading">
+  <div id="loading-text">🎤 Connecting to Karaoke System...</div>
+  <div id="progress-container">
+    <div id="progress-bar"></div>
+  </div>
+  <div id="percentage">0%</div>
+</div>
 
+<!-- POPUP -->
 <div class="popup" id="popup">
   <h2 class="line">🎤 APRIL FOOLS 🎤</h2>
-
   <p class="line">There is no Karaoke Friday.</p>
-
   <p class="line">But the fact that you clicked this link…</p>
-
   <p class="line">tells us everything we need to know.</p>
-
   <p class="line">Some of you were READY.</p>
-
   <p class="line">Mentally. Emotionally. Vocally.</p>
-
   <p class="line"><b>HR is taking notes.</b></p>
-
   <p class="line"><b>We’re here for you.</b></p>
 </div>
 
 <script>
-  setTimeout(() => {
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("popup").style.display = "flex";
+  // LOADING BAR
+  let progress = 0;
+  let interval = setInterval(() => {
+    progress += Math.floor(Math.random() * 8) + 2;
 
-    startReveal();
-    startConfetti();
-    startEmojis();
-  }, 2000);
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(interval);
 
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("popup").style.display = "flex";
+
+      startReveal();
+      startConfetti();
+      startEmojis();
+    }
+
+    document.getElementById("progress-bar").style.width = progress + "%";
+    document.getElementById("percentage").innerText = progress + "%";
+  }, 120);
+
+  // TEXT REVEAL
   function startReveal() {
     const lines = document.querySelectorAll(".line");
     lines.forEach((line, index) => {
@@ -143,6 +166,7 @@
     });
   }
 
+  // CONFETTI
   function startConfetti() {
     setInterval(() => {
       confetti({
@@ -153,6 +177,7 @@
     }, 800);
   }
 
+  // EMOJIS
   const emojis = ["😂","🤣","🎤","😜","🤡","🔥","🙈","🎶"];
 
   function startEmojis() {
